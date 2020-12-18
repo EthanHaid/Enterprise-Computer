@@ -1,4 +1,4 @@
-from snowboy import snowboydecoder
+import snowboydecoder
 import sys
 import signal
 
@@ -14,6 +14,9 @@ def interrupt_callback():
     global interrupted
     return interrupted
 
+def goprint(str):
+    print(str)
+
 if len(sys.argv) != 5:
     print("Error: need to specify 4 model names")
     print("Usage: python detect_hotwords.py models/*")
@@ -26,10 +29,10 @@ signal.signal(signal.SIGINT, signal_handler)
 
 sensitivity = [0.5]*len(models)
 detector = snowboydecoder.HotwordDetector(models, sensitivity=sensitivity)
-callbacks = [lambda: print("Fire phasers!"),
-             lambda: print("Red alert!"),
-             lambda: print("Shields up!"),
-             lambda: print("Yellow alert!")]
+callbacks = [lambda: goprint("Fire phasers!"),
+             lambda: goprint("Red alert!"),
+             lambda: goprint("Shields up!"),
+             lambda: goprint("Yellow alert!")]
 print('Listening... Press Ctrl+C to exit')
 
 # main loop
