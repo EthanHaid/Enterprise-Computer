@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="entprise.png" alt="USS Enterprise" />
+  <img src="enterprise.png" alt="USS Enterprise" />
 </p>
 <p align="center">
   <strong>:globe_with_meridians: Enterprise: Shields up! :globe_with_meridians:</strong></br>
