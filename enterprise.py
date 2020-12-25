@@ -44,6 +44,14 @@ def firePhasers():
 
   setLEDs(r, g, b)
 
+def powerOff():
+  print("Power Off!")
+  setLEDs(GPIO.LOW, GPIO.LOW, GPIO.LOW)
+
+def powerOn():
+  print("Power On!")
+  setLEDs(GPIO.HIGH, GPIO.HIGH, GPIO.HIGH)
+
 def redAlert():
   print("Red Alert!")
   setLEDs(GPIO.HIGH, GPIO.LOW, GPIO.LOW)
@@ -52,18 +60,28 @@ def shieldsUp():
   print("Shields Up!")
   setLEDs(GPIO.LOW, GPIO.LOW, GPIO.HIGH)
 
+def standDown():
+  print("Stand Down!")
+  setLEDs(GPIO.HIGH, GPIO.HIGH, GPIO.HIGH)
+
 def yellowAlert():
   print("Yellow Alert!")
   setLEDs(GPIO.HIGH, GPIO.HIGH, GPIO.LOW)
 
 models = ['models/Enterprise_ Fire phasers!.pmdl',
+          'models/Enterprise_ Power Off!.pmdl',
+          'models/Enterprise_ Power On!.pmdl',
           'models/Enterprise_ Red alert!.pmdl',
           'models/Enterprise_ Shields up!.pmdl',
+          'models/Enterprise_ Stand Down!.pmdl',
           'models/Enterprise_ Yellow alert!.pmdl']
 
 callbacks = [lambda: firePhasers(),
+             lambda: powerOff(),
+             lambda: powerOn(),
              lambda: redAlert(),
              lambda: shieldsUp(),
+             lambda: standDown(),
              lambda: yellowAlert()]
 
 detect_hotwords.detect(models, callbacks)

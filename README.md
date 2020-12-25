@@ -26,4 +26,7 @@ SnowBoy hotword recognition works using pre-trained models. I have trained them 
 - <a href="https://snowboy.kitt.ai/hotword/57534", target="_blank">Enterprise: Shields up!</a>
 - <a href="https://snowboy.kitt.ai/hotword/57535", target="_blank">Enterprise: Yellow alert!</a>
 - <a href="https://snowboy.kitt.ai/hotword/57536", target="_blank">Enterprise: Red alert!</a>
+- <a href="https://snowboy.kitt.ai/hotword/57739", target="_blank">Enterprise: Stand Down!</a>
 - <a href="https://snowboy.kitt.ai/hotword/57537", target="_blank">Enterprise: Fire phasers!</a>
+- <a href="https://snowboy.kitt.ai/hotword/57740", target="_blank">Enterprise: Power Off!</a>
+- <a href="https://snowboy.kitt.ai/hotword/57741", target="_blank">Enterprise: Power On!</a>
