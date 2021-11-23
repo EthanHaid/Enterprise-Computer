@@ -1,89 +1,151 @@
 import RPi.GPIO as GPIO
+from timeit import default_timer as timer
 from time import sleep
-from snowboy import detect_hotwords
 
-redPin = 18
-greenPin = 13
-bluePin = 27
-inPin = 17
+# time, GPIO pin, state
+timings = [
+  [ 0.130, 1, GPIO.HIGH],
+  [ 0.267, 2, GPIO.HIGH],
+  [ 0.404, 3, GPIO.HIGH],
+  [ 0.470, 22, GPIO.HIGH],
+  [ 0.541, 4, GPIO.HIGH],
+  [ 0.678, 5, GPIO.HIGH],
+  [ 0.815, 6, GPIO.HIGH],
+  [ 0.952, 7, GPIO.HIGH],
+  [ 1.089, 8, GPIO.HIGH],
+  [ 1.226, 9, GPIO.HIGH],
+  [ 1.363, 10, GPIO.HIGH],
+  [ 1.430, 23, GPIO.HIGH],
+  [ 1.500, 11, GPIO.HIGH],
+  [ 1.637, 12, GPIO.HIGH],
+  [ 1.774, 13, GPIO.HIGH],
+  [ 1.911, 14, GPIO.HIGH],
+  [ 2.048, 15, GPIO.HIGH],
+  [ 2.185, 16, GPIO.HIGH],
+  [ 2.322, 17, GPIO.HIGH],
+  [ 2.389, 22, GPIO.HIGH],
+  [ 2.459, 18, GPIO.HIGH],
+  [ 2.596, 19, GPIO.HIGH],
+  [ 2.733, 20, GPIO.HIGH],
+  [ 2.870, 21, GPIO.HIGH],
+  [ 3.349, 23, GPIO.HIGH],
+  [ 4.308, 22, GPIO.HIGH],
+  [ 5.268, 23, GPIO.HIGH],
+  [ 6.227, 22, GPIO.HIGH],
+  [ 7.187, 23, GPIO.HIGH],
+  [ 8.146, 22, GPIO.HIGH],
+  [ 9.106, 23, GPIO.HIGH],
+  [ 10.065, 22, GPIO.HIGH],
+  [ 11.025, 23, GPIO.HIGH],
+  [ 11.984, 22, GPIO.HIGH],
+  [ 12.944, 23, GPIO.HIGH],
+  [ 13.903, 23, GPIO.LOW],
+  [ 14.600, 21, GPIO.LOW],
+  [ 14.737, 20, GPIO.LOW],
+  [ 14.874, 19, GPIO.LOW],
+  [ 15.011, 18, GPIO.LOW],
+  [ 15.148, 17, GPIO.LOW],
+  [ 15.285, 16, GPIO.LOW],
+  [ 15.422, 15, GPIO.LOW],
+  [ 15.559, 14, GPIO.LOW],
+  [ 15.696, 13, GPIO.LOW],
+  [ 15.833, 12, GPIO.LOW],
+  [ 15.970, 11, GPIO.LOW],
+  [ 16.107, 10, GPIO.LOW],
+  [ 16.244, 9, GPIO.LOW],
+  [ 16.381, 8, GPIO.LOW],
+  [ 16.518, 7, GPIO.LOW],
+  [ 16.655, 6, GPIO.LOW],
+  [ 16.792, 5, GPIO.LOW],
+  [ 16.929, 4, GPIO.LOW],
+  [ 17.066, 3, GPIO.LOW],
+  [ 17.203, 2, GPIO.LOW],
+  [ 17.340, 1, GPIO.LOW],
+]
 
-currentState = (GPIO.HIGH, GPIO.HIGH, GPIO.HIGH)
+# Initialize pins 
+# 25: input - IR Sensor
+# 0-23: output low - Shields & Red Alert
+# 24: output high - Ready!
+def init():
+  print("Initializing...")
+  GPIO.setmode(GPIO.BCM)
 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(redPin, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(greenPin, GPIO.OUT, initial=GPIO.HIGH)
-GPIO.setup(bluePin, GPIO.OUT, initial=GPIO.HIGH)
+  GPIO.setup(25, GPIO.IN)
+  for i in range(24):
+    GPIO.setup(i, GPIO.OUT, initial=GPIO.LOW)
+  GPIO.setup(24, GPIO.OUT, initial=GPIO.HIGH)
 
-GPIO.setup(inPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+  print("Done")
 
-def setLEDs(r = GPIO.HIGH, g = GPIO.HIGH, b = GPIO.HIGH):
-  GPIO.output(redPin, r)
-  GPIO.output(greenPin, g)
-  GPIO.output(bluePin, b)
-  currentState = (r, g, b)
+# 
+def bootAnimation():
+  print("Boot Animation...")
 
-def firePhasers():
-  print("Fire Phasers!")
-  (r, g, b) = currentState
+  for i in range(2):
+    for j in range(21):
+      GPIO.output(j+1, GPIO.HIGH)
+      sleep(0.1)
+      GPIO.output(j+1, GPIO.LOW)
+      
+  print("Done")
 
-  setLEDs(GPIO.HIGH, GPIO.LOW, GPIO.LOW)
-  sleep(0.15)
-  setLEDs(GPIO.LOW, GPIO.LOW, GPIO.LOW)
-  sleep(0.15)
-  setLEDs(GPIO.HIGH, GPIO.LOW, GPIO.LOW)
-  sleep(0.15)
-  setLEDs(GPIO.LOW, GPIO.LOW, GPIO.LOW)
-  sleep(0.5)
+# Set pins 1-21 to a given state
+def setShields(state):
+  for i in range(1, 22):
+    GPIO.output(i, state)
 
-  setLEDs(GPIO.HIGH, GPIO.LOW, GPIO.LOW)
-  sleep(0.15)
-  setLEDs(GPIO.LOW, GPIO.LOW, GPIO.LOW)
-  sleep(0.15)
-  setLEDs(GPIO.HIGH, GPIO.LOW, GPIO.LOW)
-  sleep(0.15)
+# Set shields to high
+def raiseShields():
+  print("Shields High...")
+  setShields(GPIO.HIGH)
+  print("Done")
 
-  setLEDs(r, g, b)
+# Set shields to low
+def lowerShields():
+  print("Shields Low...")
+  setShields(GPIO.LOW)
+  print("Done")
 
-def powerOff():
-  print("Power Off!")
-  setLEDs(GPIO.LOW, GPIO.LOW, GPIO.LOW)
+# Play shield animation
+def animateShields():
+  print("Play Animation...")
 
-def powerOn():
-  print("Power On!")
-  setLEDs(GPIO.HIGH, GPIO.HIGH, GPIO.HIGH)
+  start = timer()
+  i = 0
+  timing = timings[0]
+  
+  while True:
+    end = timer()
+    if end - start > timing[0]:
+      GPIO.output(timing[1], timing[2])
 
-def redAlert():
-  print("Red Alert!")
-  setLEDs(GPIO.HIGH, GPIO.LOW, GPIO.LOW)
+      # Red alert pins
+      if timing[1] == 22: 
+        GPIO.output(23, GPIO.LOW)
+      elif timing[1] == 23: 
+        GPIO.output(22, GPIO.LOW)
 
-def shieldsUp():
-  print("Shields Up!")
-  setLEDs(GPIO.LOW, GPIO.LOW, GPIO.HIGH)
+      i += 1
+      if i >= len(timings):
+        break
+      timing = timings[i]
 
-def standDown():
-  print("Stand Down!")
-  setLEDs(GPIO.HIGH, GPIO.HIGH, GPIO.HIGH)
+  print("Done")
 
-def yellowAlert():
-  print("Yellow Alert!")
-  setLEDs(GPIO.HIGH, GPIO.HIGH, GPIO.LOW)
+  
+if __name__ == "__main__":
+  init()
+  bootAnimation()
+  lowerShields()
 
-models = ['models/Enterprise_ Fire phasers!.pmdl',
-          'models/Enterprise_ Power Off!.pmdl',
-          'models/Enterprise_ Power On!.pmdl',
-          'models/Enterprise_ Red alert!.pmdl',
-          'models/Enterprise_ Shields up!.pmdl',
-          'models/Enterprise_ Stand Down!.pmdl',
-          'models/Enterprise_ Yellow alert!.pmdl']
+  # Event loop
+  try:
+    while True:
+      animateShields()
+      sleep(2)
 
-callbacks = [lambda: firePhasers(),
-             lambda: powerOff(),
-             lambda: powerOn(),
-             lambda: redAlert(),
-             lambda: shieldsUp(),
-             lambda: standDown(),
-             lambda: yellowAlert()]
+  except KeyboardInterrupt:
+    GPIO.cleanup()
 
-detect_hotwords.detect(models, callbacks)
 
-setLEDs(GPIO.LOW, GPIO.LOW, GPIO.LOW)
