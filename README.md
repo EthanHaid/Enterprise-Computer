@@ -17,13 +17,17 @@ pip3 install -r requirements.txt
 python3 enterprise.py
 ```
 
-To run on startup, modify file
-`/etc/rc.local`
+To run on startup, append to `/etc/rc.local`
+```
+python3 /home/pi/Enterprise-Computer/src/enterprise.py
+```
 
 To stop the process, use `ctrl-c` or run
 ```bash
-sudo kill $(ps -aux | grep "enterprise.py" | awk '{print $2; exit}')
+sudo kill -9 $(ps -aux | grep "enterprise.py" | awk '{print $2; exit}')
 ```
+
+To enable IR detection, follow [this guide](https://devkimchi.com/2020/08/12/turning-raspberry-pi-into-remote-controller/). The `enterprise_controller.lircd.conf` file will need to be modified and copied to `/etc/lirc/lircd.conf.d`.
 
 You may need to update your `~/.asoundrc` file to help portaudio find your mic, as documented [here](http://docs.kitt.ai/snowboy/#running-on-pi)
 
